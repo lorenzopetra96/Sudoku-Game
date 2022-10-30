@@ -97,7 +97,7 @@ public class SudokuGame {
 		try  
 		{  
 
-
+			screen.clear();
 
 
 			StringBuffer nickname = new StringBuffer();
