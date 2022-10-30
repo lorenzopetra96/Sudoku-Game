@@ -5,7 +5,7 @@ RUN git clone https://github.com/lorenzopetra96/sudoku-game.git
 FROM maven:3.5-jdk-8-alpine
 WORKDIR /app
 COPY --from=0 /app/sudoku-game /app
-RUN mvn package
+RUN mvn package -Dmaven.test.skip
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
