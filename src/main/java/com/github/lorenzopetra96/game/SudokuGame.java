@@ -43,6 +43,7 @@ public class SudokuGame {
 	private Terminal terminal;
 	private TerminalPosition tp;
 	private int row;
+	private static SudokuGame game;
 
 	@Option(name="-m", aliases="--masterip", usage="the master peer ip address", required=true)
 	private static String master;
@@ -72,13 +73,13 @@ public class SudokuGame {
 
 	public static void main(String[] args) throws Exception {
 
-		SudokuGame game = new SudokuGame(args);
+		game = new SudokuGame(args);
 		try {
 			
 			
 			game.home_screen();
 			game.choices_screen();
-			game.exit();
+			
 		    
 		    
 		    
@@ -142,7 +143,7 @@ public class SudokuGame {
 				else if(ks.getKeyType() == KeyType.Character) {
 
 
-					if(nickname.length() == 10) {
+					if(nickname.length() == 7) {
 						continue;
 					}
 					nickname.append(ks.getCharacter());
@@ -248,6 +249,10 @@ public class SudokuGame {
 						
 					if(!codice_partita.isEmpty() && peer.generateNewSudoku(codice_partita, 0)) {
 						game_screen();
+						choice.delete(0, choice.length());
+						screen.setCursorPosition(tp.withRelativeRow(8).withRelativeColumn(5));
+						screen.clear();
+						screen.refresh();
 					}
 					else {
 						textGraphics.setForegroundColor(TextColor.ANSI.RED);
@@ -262,22 +267,21 @@ public class SudokuGame {
 
 					String challenge_name = choice.toString().substring(1);
 					
-					try {
-						
 						if(!challenge_name.isEmpty() && peer.joinChallenge(challenge_name)) {
 							game_screen();
+							choice.delete(0, choice.length());
+							screen.setCursorPosition(tp.withRelativeRow(8).withRelativeColumn(5));
+							screen.clear();
+							screen.refresh();
 						}
-						
-					}catch(Exception e) {
-						e.printStackTrace();
-					}
 
 					continue;
 				}
 				default: {
 					
 					if(choice.toString().equals("exit")) {
-						return;
+						game.exit();
+						break;
 					}
 
 					textGraphics.setForegroundColor(TextColor.ANSI.RED);
@@ -418,7 +422,7 @@ public class SudokuGame {
 					textGraphics.setForegroundColor(TextColor.ANSI.DEFAULT);
 
 					Thread.sleep(200);
-					choices_screen();
+					return;
 					
 				}
 				
@@ -778,9 +782,11 @@ public class SudokuGame {
 		try {
 			
 			peer.leaveNetwork();
+			peer.shutdown();
 			terminal.close();
 			screen.close();
-			//System.exit(0);
+			Thread.sleep(300);
+			System.exit(0);
 			
 		}catch(Exception e) {
 			e.printStackTrace();

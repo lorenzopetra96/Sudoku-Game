@@ -54,6 +54,9 @@ public interface Client {
 	// Abbandono rete
 	public boolean leaveNetwork();
 	
+	// Spegnimento peer
+	public void shutdown();
+	
 	// Recupero lista partite disponibili
 	public ArrayList<Challenge> getChallenges();
 

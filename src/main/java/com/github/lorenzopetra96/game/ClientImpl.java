@@ -43,7 +43,7 @@ public class ClientImpl implements Client{
 		peer= new PeerBuilder(Number160.createHash(id)).ports(DEFAULT_MASTER_PORT+id).start();
 		_dht = new PeerBuilderDHT(peer).start();	
 
-		FutureBootstrap fb = peer.bootstrap().inetAddress(InetAddress.getByName("127.0.0.1")).ports(DEFAULT_MASTER_PORT).start();
+		FutureBootstrap fb = peer.bootstrap().inetAddress(InetAddress.getByName(_master_peer)).ports(DEFAULT_MASTER_PORT).start();
 		fb.awaitUninterruptibly();
 		if(fb.isSuccess()) {
 			peer.discover().peerAddress(fb.bootstrapTo().iterator().next()).start().awaitUninterruptibly();
@@ -84,7 +84,6 @@ public class ClientImpl implements Client{
 					players = (ArrayList<Player>) futureGet.dataMap().values().iterator().next().object();
 					
 					for(Player pl: players) {
-						System.out.println(pl.getNickname());
 						if(pl.getNickname().equals(player.getNickname())) return false;
 					}
 				}
@@ -520,6 +519,24 @@ public class ClientImpl implements Client{
 
 	}
 
+	public int findPlayer() {
+
+		int index=0;
+
+		Iterator<Player> myIter = players.iterator();
+
+		while (myIter.hasNext()) {
+			Player tmp1 = myIter.next();
+			if (tmp1.getNickname().equals(player.getNickname())) {
+				return index;
+			}
+			index++;
+		}
+
+
+		return -1;
+
+	}
 
 
 	public boolean leaveNetwork() {
@@ -532,17 +549,9 @@ public class ClientImpl implements Client{
 				if(!futureGet.isEmpty()) {
 					players = (ArrayList<Player>) futureGet.dataMap().values().iterator().next().object();
 					if(players.size()==1) players.clear();
-					else players.remove(player);
+					else players.remove(findPlayer());
 					_dht.put(playersKey).data(new Data(players)).start().awaitUninterruptibly();
 				}
-				
-				_dht.peer().announceShutdown().start().awaitUninterruptibly();
-				
-				challenges.clear();
-				players.clear();
-				challenge = null;
-				player = null;
-				peer.shutdown();
 				
 				return true;
 			}
@@ -553,6 +562,16 @@ public class ClientImpl implements Client{
 		
 		
 		return false;
+	}
+	
+	public void shutdown() {
+		_dht.peer().announceShutdown().start().awaitUninterruptibly();
+		
+		challenges.clear();
+		players.clear();
+		challenge = null;
+		player = null;
+		peer.shutdown();
 	}
 
 
