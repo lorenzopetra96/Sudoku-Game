@@ -149,6 +149,7 @@ public class SudokuGame {
 					}
 					nickname.append(ks.getCharacter());
 					System.out.println(nickname.toString());
+					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "               ");
 					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), nickname.toString(), SGR.BOLD);
 					screen.setCursorPosition(tp.withRelativeRow(10).withRelativeColumn(52+nickname.length()));
 
@@ -304,7 +305,7 @@ public class SudokuGame {
 				}
 				choice.append(ks.getCharacter());
 				System.out.println(choice.toString());
-
+				textGraphics.putString(5, 8, "                                                        ", SGR.BOLD, SGR.ITALIC);
 				textGraphics.putString(tp.withRelativeRow(8).withRelativeColumn(5), choice.toString(), SGR.BOLD);
 				screen.setCursorPosition(tp.withRelativeRow(8).withRelativeColumn(5 + choice.length()));
 			}
