@@ -1,5 +1,6 @@
 package com.github.lorenzopetra96.game;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.kohsuke.args4j.CmdLineException;
@@ -57,7 +58,7 @@ public class SudokuGame {
 		parser.parseArgument(args); 
 		System.out.println("\nPeer: " + id + " on Master: " + master + "\n");
 		peer = new ClientImpl(master, id);
-		terminal = new DefaultTerminalFactory().createTerminal();
+		terminal = new DefaultTerminalFactory(System.out, System.in, Charset.forName("UTF8")).createTerminal();
 
 
 		screen = new TerminalScreen(terminal);
