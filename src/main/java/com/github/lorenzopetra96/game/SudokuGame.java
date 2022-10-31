@@ -121,7 +121,7 @@ public class SudokuGame {
 
 				KeyStroke ks = screen.pollInput();
 				if (ks == null) {
-					Thread.sleep(300);
+					Thread.sleep(30);
 					continue;
 				}
 				if(ks.getKeyType() == KeyType.Enter) { 
@@ -149,7 +149,7 @@ public class SudokuGame {
 					}
 					nickname.append(ks.getCharacter());
 					System.out.println(nickname.toString());
-					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                    ");
+					//textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                    ");
 					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), nickname.toString(), SGR.BOLD);
 					screen.setCursorPosition(tp.withRelativeRow(10).withRelativeColumn(52+nickname.length()));
 
@@ -157,7 +157,7 @@ public class SudokuGame {
 				else if(ks.getKeyType() == KeyType.Backspace && nickname.length()!=0) {
 
 					nickname.deleteCharAt(nickname.length()-1);
-					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                     ");
+					//textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                     ");
 					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), nickname.toString(), SGR.BOLD);
 					screen.setCursorPosition(tp.withRelativeRow(10).withRelativeColumn(52+nickname.length()));
 
