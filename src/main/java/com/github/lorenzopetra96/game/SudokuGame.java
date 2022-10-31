@@ -110,7 +110,7 @@ public class SudokuGame {
 				textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
 				textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
 
-				create_home_screen();
+//				create_home_screen();
 
 				textGraphics.putString(2, 10, "Prima di iniziare a giocare, inserisci un nickname: " );
 
@@ -121,7 +121,7 @@ public class SudokuGame {
 
 				KeyStroke ks = screen.pollInput();
 				if (ks == null) {
-					Thread.sleep(30);
+					Thread.sleep(300);
 					continue;
 				}
 				if(ks.getKeyType() == KeyType.Enter) { 
@@ -149,16 +149,16 @@ public class SudokuGame {
 					}
 					nickname.append(ks.getCharacter());
 					System.out.println(nickname.toString());
-					//textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                    ");
-					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), nickname.toString(), SGR.BOLD);
+//					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                    ");
+					textGraphics.putString(52, 10, nickname.toString(), SGR.BOLD);
 					screen.setCursorPosition(tp.withRelativeRow(10).withRelativeColumn(52+nickname.length()));
 
 				}
 				else if(ks.getKeyType() == KeyType.Backspace && nickname.length()!=0) {
 
 					nickname.deleteCharAt(nickname.length()-1);
-					//textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), "                     ");
-					textGraphics.putString(tp.withRelativeRow(10).withRelativeColumn(52), nickname.toString(), SGR.BOLD);
+//					textGraphics.putString(52, 10, "                     ");
+					textGraphics.putString(52, 10, nickname.toString(), SGR.BOLD);
 					screen.setCursorPosition(tp.withRelativeRow(10).withRelativeColumn(52+nickname.length()));
 
 				}
