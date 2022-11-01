@@ -1,25 +1,37 @@
 package com.github.lorenzopetra96.game;
 
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.TextTerminal;
+
 import com.github.lorenzopetra96.beans.Challenge;
 import com.github.lorenzopetra96.beans.Pair;
 import com.github.lorenzopetra96.beans.Player;
 import com.github.lorenzopetra96.interfaces.Client;
+
+
 import com.github.lorenzopetra96.exceptions.*;
+import com.github.lorenzopetra96.game.SudokuGame.MessageListener;
 
 import net.tomp2p.dht.FutureGet;
 import net.tomp2p.dht.FutureRemove;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.futures.FutureBootstrap;
+import net.tomp2p.futures.FutureDirect;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 
 public class ClientImpl implements Client{
@@ -33,12 +45,40 @@ public class ClientImpl implements Client{
 
 	private ArrayList<Challenge> challenges = new ArrayList<Challenge>();
 	private ArrayList<Player> players = new ArrayList<Player>();
-	private Challenge challenge;
+	private Challenge challenge = null;
 	private Player player;
 
 
 
-	public ClientImpl( String _master_peer, int id) throws Exception
+	public ArrayList<Player> getPlayers() {
+		return players;
+	}
+
+
+
+
+	public void setPlayers(ArrayList<Player> players) {
+		this.players = players;
+	}
+
+
+
+
+	public void setChallenges(ArrayList<Challenge> challenges) {
+		this.challenges = challenges;
+	}
+
+
+
+
+	public void setChallenge(Challenge challenge) {
+		this.challenge = challenge;
+	}
+
+
+
+
+	public ClientImpl( String _master_peer, int id, final MessageListener _listener) throws Exception
 	{
 		peer= new PeerBuilder(Number160.createHash(id)).ports(DEFAULT_MASTER_PORT+id).start();
 		_dht = new PeerBuilderDHT(peer).start();	
@@ -51,29 +91,42 @@ public class ClientImpl implements Client{
 			throw new Exception("Error in master peer bootstrap.");
 		}
 
-        try {
-            _dht.get(playersKey).start().awaitUninterruptibly();
-        } catch (Exception e) {
-            _dht.put(playersKey).data(new Data(players)).start().awaitUninterruptibly();
-        }
+		peer.objectDataReply(new ObjectDataReply() {
 
-        try {
-            _dht.get(challengesKey).start().awaitUninterruptibly();
-        } catch (Exception e) {
-            _dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
-        }
+			public Object reply(PeerAddress sender, Object request) throws Exception {
+				Robot robot = new Robot();
+
+				robot.keyPress(KeyEvent.VK_ENTER);
+				return _listener.parseMessage(request);
+			}
+		});
+
+		try {
+			_dht.get(playersKey).start().awaitUninterruptibly();
+		} catch (Exception e) {
+			_dht.put(playersKey).data(new Data(players)).start().awaitUninterruptibly();
+		}
+
+		try {
+			_dht.get(challengesKey).start().awaitUninterruptibly();
+		} catch (Exception e) {
+			_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
+		}
 
 	}
 
+	
+	
+	
 	@Override
 	public boolean checkPlayer(String nickname) throws Exception{
 
 		if(player != null) {
-            throw new RuntimeException("Player già presente.");
-        }
-		
+			throw new RuntimeException("Player già presente.");
+		}
+
 		if(nickname.contains(" ")) return false;
-		
+
 		player = new Player(nickname, peer.peerAddress());
 
 		try {
@@ -82,7 +135,7 @@ public class ClientImpl implements Client{
 			if(futureGet.isSuccess()) {
 				if(!futureGet.isEmpty()) {
 					players = (ArrayList<Player>) futureGet.dataMap().values().iterator().next().object();
-					
+
 					for(Player pl: players) {
 						if(pl.getNickname().equals(player.getNickname())) return false;
 					}
@@ -99,7 +152,7 @@ public class ClientImpl implements Client{
 
 		return false;
 	}
-	
+
 
 
 	@Override
@@ -108,18 +161,19 @@ public class ClientImpl implements Client{
 
 		try {
 
-			
-			
+
+
 			challenge = new Challenge(codice_partita, player.getNickname(), seed);
-			
+
 			FutureGet futureGet = _dht.get(Number160.createHash(codice_partita)).start().awaitUninterruptibly();
 			if (futureGet.isSuccess() && checkChallenge(codice_partita)) {
 
 				if(!futureGet.isEmpty()) {
 					return false;
 				}
-				
+
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
+				
 				addChallenge();
 				return true;
 			}
@@ -130,20 +184,20 @@ public class ClientImpl implements Client{
 		return false;
 
 	}
-	
+
 	@Override
 	public boolean checkChallenge(String codice_partita) throws Exception {
 		int index=0;
 
 		try {
-			
+
 			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
 			if (futureGet.isSuccess()) {
 
 				if(!futureGet.isEmpty()) {
 					challenges = (ArrayList<Challenge>) futureGet.dataMap().values().iterator().next().object();
 				}
-				
+
 				Iterator<Challenge> myIter = challenges.iterator();
 
 				while (myIter.hasNext()) {
@@ -153,10 +207,10 @@ public class ClientImpl implements Client{
 					}
 					index++;
 				}
-				
+
 				return true;
 			}
-			
+
 		}catch(ChallengeAlreadyExistsException e) {
 			System.out.println("Sfida con codice partita " + codice_partita + " già esistente");
 		}
@@ -170,16 +224,20 @@ public class ClientImpl implements Client{
 
 	public boolean addChallenge() throws Exception {
 
-
+		reloadPlayers();
 		try {
 
-
+			
 			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
 			if (futureGet.isSuccess()) {
 
 				challenges.add(challenge);
 				_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
-
+				for(Player peer: players)
+				{
+					FutureDirect futureDirect = _dht.peer().sendDirect(peer.getPeerAdd()).object(challenges).start();
+					futureDirect.awaitUninterruptibly();
+				}
 				return true;
 			}
 		}catch (Exception e) {
@@ -232,25 +290,17 @@ public class ClientImpl implements Client{
 	}
 	
 	@Override
-	public void updateChallengeList() throws Exception{
+	public void reloadPlayers() throws Exception{
 
-		int index = findChallenge();
-		
-		if(index == -1) throw new ChallengeNotFoundException();
-		
 		try {
 
-			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
+			FutureGet futureGet = _dht.get(playersKey).start().awaitUninterruptibly();
 
 			if(futureGet.isSuccess()) {
 				if(!futureGet.isEmpty())
-				
-				
-				challenges.get(index).setPlayers_scores(challenge.getPlayers_scores());
-				}
-				_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
+					players = (ArrayList<Player>) futureGet.dataMap().values().iterator().next().object();
 
-			
+			}
 
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -258,7 +308,43 @@ public class ClientImpl implements Client{
 
 
 	}
-	
+
+	@Override
+	public void updateChallengeList() throws Exception{
+
+		int index = findChallenge();
+
+		if(index == -1) throw new ChallengeNotFoundException();
+
+		try {
+
+			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
+
+			if(futureGet.isSuccess()) {
+				if(!futureGet.isEmpty()) {
+					challenges.get(index).setPlayers_scores(challenge.getPlayers_scores());
+					
+
+				}
+				
+			}
+			_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
+			reloadPlayers();
+			for(Player peer: players)
+			{
+				FutureDirect futureDirect = _dht.peer().sendDirect(peer.getPeerAdd()).object(challenges).start();
+				futureDirect.awaitUninterruptibly();
+			}
+
+
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
 	@Override
 	public void removeFromChallengeList() throws Exception{
 
@@ -271,12 +357,12 @@ public class ClientImpl implements Client{
 					challenges = (ArrayList<Challenge>) futureGet.dataMap().values().iterator().next().object();
 					if(challenges.size()<2) challenges.clear();
 					else challenges.remove(findChallenge());
-					
+
 					_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
-					
+
 				}
-					
-				
+
+
 			}
 
 		}catch (Exception e) {
@@ -305,12 +391,12 @@ public class ClientImpl implements Client{
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 
 
 	}
-	
+
 	@Override
 	public boolean startChallenge(String codice_partita) throws Exception{
 
@@ -333,7 +419,7 @@ public class ClientImpl implements Client{
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 
 
@@ -386,7 +472,7 @@ public class ClientImpl implements Client{
 				if(futureGet.isEmpty()) {
 					challenge.setTerminated(true);
 				}
-				
+
 				challenge = (Challenge) futureGet.dataMap().values().iterator().next().object();
 				if(challenge.getPlayers_scores().size()==1) {
 					challenge.getPlayers_scores().clear();
@@ -400,16 +486,16 @@ public class ClientImpl implements Client{
 				if(challenge.getPlayers_scores().size()==1 || challenge.isTerminated()) {
 					removeFromChallengeList();
 				}
-				
+
 				if(!(challenge.getPlayers_scores().isEmpty())) {
-					
-					
+
+
 					_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
-					
+
 				}
 				else removeChallenge(codice_partita); 
-		
-				
+
+
 
 
 			}
@@ -466,19 +552,19 @@ public class ClientImpl implements Client{
 				}
 
 				if(challenge.getSudoku_board().contaZeri(challenge.getSudoku_board().getSudoku_sfida()) == 0) {
-					
+
 					challenge.setFull(true);
 					Map.Entry<String, Integer> maxEntry = null;
 					for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
 					{
-						
-					    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-					    {
-					        maxEntry = entry;
-					    }
+
+						if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+						{
+							maxEntry = entry;
+						}
 					}
-					
-					
+
+
 					challenge.setTerminated(true);
 					Pair<String, Integer> winner = new Pair<String,Integer>(maxEntry.getKey(), maxEntry.getValue());
 
@@ -499,7 +585,7 @@ public class ClientImpl implements Client{
 
 
 	}
-	
+
 	public int findChallenge() {
 
 		int index=0;
@@ -545,28 +631,28 @@ public class ClientImpl implements Client{
 			FutureGet futureGet = _dht.get(playersKey).start().awaitUninterruptibly();
 
 			if(futureGet.isSuccess()) {
-				
+
 				if(!futureGet.isEmpty()) {
 					players = (ArrayList<Player>) futureGet.dataMap().values().iterator().next().object();
 					if(players.size()==1) players.clear();
 					else players.remove(findPlayer());
 					_dht.put(playersKey).data(new Data(players)).start().awaitUninterruptibly();
 				}
-				
+
 				return true;
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		return false;
 	}
-	
+
 	public void shutdown() {
 		_dht.peer().announceShutdown().start().awaitUninterruptibly();
-		
+
 		challenges.clear();
 		players.clear();
 		challenge = null;
