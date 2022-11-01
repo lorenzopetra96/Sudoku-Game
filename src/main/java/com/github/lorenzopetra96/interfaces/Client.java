@@ -66,16 +66,4 @@ public interface Client {
 	// Recupero informazioni player
 	public Player getPlayer();
 	
-	public ArrayList<Player> getPlayers();
-	
-	
-	public void setPlayers(ArrayList<Player> players);
-	
-	public void setChallenges(ArrayList<Challenge> challenges);
-
-	public void setChallenge(Challenge challenge);
-	
-	public void reloadPlayers() throws Exception;
-
-	
 }
