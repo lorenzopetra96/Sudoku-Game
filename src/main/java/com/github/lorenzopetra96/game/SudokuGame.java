@@ -157,12 +157,15 @@ public class SudokuGame {
 
 	public void choices_screen() throws Exception{
 		
+		System.out.print("\033[H\033[2J");  
+		System.out.flush();
 		String choice;
 		String codice_partita_0;
 		while(true) {
 			terminal.setBookmark("TABELLONE");
 			peer.reloadChallengeList();
-			
+			System.out.print("\033[H\033[2J");  
+			System.out.flush();
 			terminal.println("[PEER " + id + " | " + peer.getPlayer().getNickname() + "]");
 			
 			terminal.println("\n\n-------------------------------------------------------------------");
@@ -279,7 +282,8 @@ public class SudokuGame {
 		
 		
 		while(true) {
-			
+			System.out.print("\033[H\033[2J");  
+			System.out.flush();
 			terminal.println("GAME SCREEN");
 			terminal.resetToBookmark("TABELLONE");
 		}
