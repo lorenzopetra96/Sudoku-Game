@@ -50,6 +50,9 @@ public class SudokuGame {
 	private static int id;
 
 	private SudokuGame(String[] args) throws Exception {
+		
+		System.out.print("\033[H\033[2J");  
+		System.out.flush();
 
 		CmdLineParser parser = new CmdLineParser(this); 
 		parser.parseArgument(args); 
