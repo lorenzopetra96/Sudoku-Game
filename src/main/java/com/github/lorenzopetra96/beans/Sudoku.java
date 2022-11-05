@@ -120,12 +120,16 @@ public class Sudoku implements Serializable{
 	
 	private void complica_sudoku(){
 		
-		for(int i=0;i<9;i++) {
-			for(int j=0;j<9;j++) {
-				if(i%2==0 && j%2==0) sudoku_sfida[i][j] = 0;
-				else if( i%2==1 && j%2==1) sudoku_sfida[i][j] = 0;
-			}
-		}
+		
+		sudoku_sfida[3][3] = 0;
+		sudoku_sfida[4][4] = 0;
+		
+//		for(int i=0;i<9;i++) {
+//			for(int j=0;j<9;j++) {
+//				if(i%2==0 && j%2==0) sudoku_sfida[i][j] = 0;
+//				else if( i%2==1 && j%2==1) sudoku_sfida[i][j] = 0;
+//			}
+//		}
 		
 	}
 

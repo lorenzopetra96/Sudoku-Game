@@ -76,6 +76,8 @@ public interface Client {
 	public void setChallenge(Challenge challenge);
 	
 	public void reloadPlayers() throws Exception;
+	
+	public boolean sendUpdatedChallenge() throws Exception;
 
 	
 }
