@@ -1,4 +1,6 @@
-FROM alpine/git
+FROM ubuntu:18.04
+RUN apt update
+RUN apt install -y git
 WORKDIR /app
 RUN git clone https://github.com/lorenzopetra96/sudoku-game.git
 
