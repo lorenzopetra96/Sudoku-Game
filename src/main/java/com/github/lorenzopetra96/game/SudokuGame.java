@@ -316,7 +316,7 @@ public class SudokuGame {
 
 				terminal.getProperties().setPromptColor("white");
 				terminal.getProperties().setPromptItalic(false);
-				continue;
+//				continue;
 
 			}
 			else if(!peer.getChallenge().isStarted() && peer.getChallenge().getPlayers_scores().size()>1) {
@@ -364,12 +364,10 @@ public class SudokuGame {
 				if(countdown==0) return;
 			}else {
 				String choice = "   ";
-				try {
-					choice = textIO.newStringInputReader()
+				
+				choice = textIO.newStringInputReader()
 							.read("\n   > ");
-				}catch(Exception e) {
-					continue;
-				}
+				
 				
 				
 				if(choice.equals("exit")) {
