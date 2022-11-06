@@ -70,18 +70,15 @@ public class SudokuGame {
 			if(obj.getClass().equals(peer.getChallenges().getClass())) {
 				peer.setChallenges((ArrayList<Challenge>) obj);
 				if(peer.getChallenge() == null) {
-//					Robot robot = new Robot();
-//					terminal.resetLine();
+					Robot robot = new Robot();
+					terminal.resetLine();
 					terminal.getProperties().setPromptColor("yellow");
 					terminal.println("Aggiornamento lista partite...");
 					terminal.getProperties().setPromptColor("white");
-//					Thread.sleep(1000);
-//					robot.keyPress(KeyEvent.VK_I);
-//					robot.keyRelease(KeyEvent.VK_I);
-					
-					
-
-
+					Thread.sleep(1000);
+					robot.keyPress(KeyEvent.VK_I);
+					robot.keyRelease(KeyEvent.VK_I);
+				
 				}
 			}
 			else if(obj.getClass().equals(peer.getChallenge().getClass())) {
@@ -295,7 +292,8 @@ public class SudokuGame {
 			
 			terminal.resetToBookmark("BOOKMARK");
 			terminal.println("[PEER " + id + " | " + peer.getPlayer().getNickname() + "]");
-			if(!peer.reloadChallenge(peer.getChallenge().getCodice_partita())) choices_screen();
+			
+			if(!peer.getChallenge().isTerminated()) peer.reloadChallenge(peer.getChallenge().getCodice_partita());
 
 			terminal.println("\n\t  SUDOKU GAME - " + peer.getChallenge().getCodice_partita());
 
@@ -307,6 +305,8 @@ public class SudokuGame {
 			terminal.println("\n\n\n Digita 'XY-N' per inserire il valore N nella cella X,Y");
 			terminal.println(" Digita 'exit' per abbandonare la partita");
 
+			
+			
 			if(!peer.getChallenge().isStarted() && peer.getChallenge().getPlayers_scores().size()<2 && !peer.getChallenge().isTerminated()) {
 				terminal.getProperties().setPromptColor("yellow");
 				terminal.getProperties().setPromptItalic(true);
@@ -325,6 +325,7 @@ public class SudokuGame {
 			else if(peer.getChallenge().isStarted() && peer.getChallenge().getPlayers_scores().size()==1 && !peer.getChallenge().isTerminated()){
 				terminal.resetToBookmark("BOOKMARK");
 				peer.getChallenge().setTerminated(true);
+//				peer.removeFromChallengeList();
 				continue;
 
 			}
@@ -332,17 +333,29 @@ public class SudokuGame {
 
 			if(peer.getChallenge().isTerminated()) {
 
+				
 				terminal.getProperties().setPromptColor("green");
 				terminal.getProperties().setPromptBold(true);
 				terminal.println(" La partita è terminata. ");
-				if(!peer.getChallenge().isFull() && peer.getChallenge().getWinner().isEmpty()) {
+				
+//				if(peer.getChallenge() != null && !peer.getChallenge().isFull() && peer.getChallenge().getWinner()!=null && peer.getChallenge().getWinner().isEmpty()) {
+//
+//					peer.getChallenge().setWinner(new Pair<String,Integer>(peer.getPlayer().getNickname(), peer.getChallenge().getPlayers_scores().get(peer.getPlayer().getNickname())) );
+//					terminal.println(peer.getChallenge().getWinner().element0() + " vince con punti pari a " + peer.getChallenge().getWinner().element1() );
+//
+//				}
+				
+				if(peer.getChallenge().isFull()) terminal.println("  \n" + peer.getChallenge().getWinner().element0() + " vince con punti pari a " + peer.getChallenge().getWinner().element1() );
+				
+				if(peer.getChallenge().getPlayers_scores().size()==1) {
 
-					peer.getChallenge().setWinner(new Pair<String,Integer>(peer.getPlayer().getNickname(), peer.getChallenge().getPlayers_scores().get(peer.getPlayer().getNickname())) );
-
+					peer.quitChallenge(peer.getChallenge().getCodice_partita());
+					terminal.getProperties().setPromptBold(false);
+					terminal.getProperties().setPromptColor("white");
+					Thread.sleep(1000);
+					return;
 				}
-
-				terminal.println(peer.getChallenge().getWinner().element0() + " vince con punti pari a " + peer.getChallenge().getWinner().element1() );
-
+				
 				terminal.getProperties().setPromptBold(false);
 				terminal.getProperties().setPromptColor("white");
 				terminal.println("\n Sarai reindirizzato al tabellone sfide tra " + countdown-- + " secondi...");

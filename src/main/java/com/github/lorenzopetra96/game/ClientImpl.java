@@ -185,6 +185,32 @@ public class ClientImpl implements Client{
 		return false;
 
 	}
+	
+	public boolean addChallenge() throws Exception {
+
+		try {
+
+			
+			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
+			if (futureGet.isSuccess()) {
+
+				challenges.add(challenge);
+				_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
+				reloadPlayers();
+				for(Player peer: players)
+				{
+					if(peer.getNickname().equals(player.getNickname())) continue;
+					FutureDirect futureDirect = _dht.peer().sendDirect(peer.getPeerAdd()).object(challenges).start();
+					futureDirect.awaitUninterruptibly();
+				}
+				return true;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+
+	}
 
 	@Override
 	public boolean checkChallenge(String codice_partita) throws Exception {
@@ -223,32 +249,7 @@ public class ClientImpl implements Client{
 	}
 
 
-	public boolean addChallenge() throws Exception {
-
-		reloadPlayers();
-		try {
-
-			
-			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
-			if (futureGet.isSuccess()) {
-
-				challenges.add(challenge);
-				_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
-				reloadPlayers();
-				for(Player peer: players)
-				{
-
-					FutureDirect futureDirect = _dht.peer().sendDirect(peer.getPeerAdd()).object(challenges).start();
-					futureDirect.awaitUninterruptibly();
-				}
-				return true;
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-
-	}
+	
 
 	@Override
 	public boolean removeChallenge(String codice_partita) throws Exception {
@@ -261,7 +262,7 @@ public class ClientImpl implements Client{
 
 			if (futureRem.isSuccess()) {
 
-				removeFromChallengeList();
+//				removeFromChallengeList();
 
 				return true;
 			}
@@ -269,6 +270,40 @@ public class ClientImpl implements Client{
 			e.printStackTrace();
 		}
 		return false;
+
+	}
+	
+	@Override
+	public void removeFromChallengeList() throws Exception{
+
+		try {
+
+			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
+
+			if(futureGet.isSuccess()) {
+				if(!futureGet.isEmpty()) {
+					challenges = (ArrayList<Challenge>) futureGet.dataMap().values().iterator().next().object();
+					if(challenges.size()<2) challenges.clear();
+					else challenges.remove(findChallenge());
+					
+
+					_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
+
+				}
+				reloadPlayers();
+				for(Player peer: players)
+				{
+					if(peer.getNickname().equals(player.getNickname())) continue;
+					FutureDirect futureDirect = _dht.peer().sendDirect(peer.getPeerAdd()).object(challenges).start().awaitUninterruptibly();
+				}
+				
+
+			}
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
 
 	}
 
@@ -350,38 +385,7 @@ public class ClientImpl implements Client{
 
 	}
 
-	@Override
-	public void removeFromChallengeList() throws Exception{
-
-		try {
-
-			FutureGet futureGet = _dht.get(challengesKey).start().awaitUninterruptibly();
-
-			if(futureGet.isSuccess()) {
-				if(!futureGet.isEmpty()) {
-					challenges = (ArrayList<Challenge>) futureGet.dataMap().values().iterator().next().object();
-					if(challenges.size()<2) challenges.clear();
-					else challenges.remove(findChallenge());
-
-					_dht.put(challengesKey).data(new Data(challenges)).start().awaitUninterruptibly();
-
-				}
-				reloadPlayers();
-				for(Player peer: players)
-				{
-					FutureDirect futureDirect = _dht.peer().sendDirect(peer.getPeerAdd()).object(challenges).start();
-					futureDirect.awaitUninterruptibly();
-				}
-				
-
-			}
-
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-
-
-	}
+	
 
 	@Override
 	public boolean reloadChallenge(String codice_partita) throws Exception{
@@ -417,7 +421,7 @@ public class ClientImpl implements Client{
 			
 			for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
 			{
-				System.out.println("Player: " + entry.getKey());
+				if(entry.getKey().equals(player.getNickname())) continue;
 				FutureDirect futureDirect = _dht.peer().sendDirect(players.get(findPlayer(entry.getKey())).getPeerAdd()).object(challenge).start();
 				futureDirect.awaitUninterruptibly();
 				
@@ -451,7 +455,14 @@ public class ClientImpl implements Client{
 				challenge = (Challenge) futureGet.dataMap().values().iterator().next().object();
 				challenge.setStarted(true);
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
-				
+				for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
+				{
+					if(entry.getKey().equals(player.getNickname())) continue;
+					System.out.println("Player: " + entry.getKey());
+					FutureDirect futureDirect = _dht.peer().sendDirect(players.get(findPlayer(entry.getKey())).getPeerAdd()).object(challenge).start();
+					futureDirect.awaitUninterruptibly();
+					
+				}
 
 				return true;
 			}
@@ -487,7 +498,6 @@ public class ClientImpl implements Client{
 				System.out.println("SIZE PLAYERS: " + challenge.getPlayers_scores().size());
 				System.out.println(challenge.getPlayers_scores().toString());
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
-				
 				updateChallengeList();
 			}
 			return true;
@@ -517,26 +527,57 @@ public class ClientImpl implements Client{
 				}
 
 				challenge = (Challenge) futureGet.dataMap().values().iterator().next().object();
-				if(challenge.getPlayers_scores().size()==1) {
-					challenge.getPlayers_scores().clear();
-					removeFromChallengeList();
-				}
-				else {
-					challenge.getPlayers_scores().remove(player.getNickname());
-					updateChallengeList();
-				}
-
-				if(challenge.getPlayers_scores().size()==1 || challenge.isTerminated()) {
-					removeFromChallengeList();
-				}
-
-				if(!(challenge.getPlayers_scores().isEmpty())) {
-
-
+				
+				challenge.getPlayers_scores().remove(player.getNickname());
+				
+				if(challenge.getPlayers_scores().size()!=0) {
+					if(challenge.getPlayers_scores().size() != 1) updateChallengeList();
+					else removeFromChallengeList();
+					for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
+					{
+						System.out.println("Player: " + entry.getKey());
+						FutureDirect futureDirect = _dht.peer().sendDirect(players.get(findPlayer(entry.getKey())).getPeerAdd()).object(challenge).start();
+						futureDirect.awaitUninterruptibly();
+						
+					}
+					
 					_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
-					sendUpdatedChallenge();
+					
+				}else {
+					
+					removeChallenge(challenge.getCodice_partita());
+					
 				}
-				else removeChallenge(codice_partita); 
+				
+				
+				
+//				if(challenge.getPlayers_scores().size()==1) {
+//					challenge.getPlayers_scores().clear();
+//
+//
+//					removeFromChallengeList();
+//				}
+//				else {
+//					challenge.getPlayers_scores().remove(player.getNickname());
+//
+//					
+//					updateChallengeList();
+//				}
+//
+//				
+//				
+//				if(challenge.getPlayers_scores().size()==1 || challenge.isTerminated()) {
+//					removeFromChallengeList();
+//				}
+//
+//
+//				if(!(challenge.getPlayers_scores().isEmpty())) {
+//
+//
+//					_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
+//					sendUpdatedChallenge();
+//				}
+//				else removeChallenge(codice_partita); 
 
 
 
@@ -615,7 +656,8 @@ public class ClientImpl implements Client{
 					challenges.remove(findChallenge());
 					
 					challenge.getSudoku_board().printSudoku(challenge.getSudoku_board().getSudoku_sfida());
-					removeChallenge(codice_partita);
+					removeFromChallengeList();
+//					removeChallenge(codice_partita);
 				}
 				
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
@@ -653,7 +695,6 @@ public class ClientImpl implements Client{
 
 	public int findPlayer(String nickname) {
 
-		System.out.println("Ricerca player con nickname: " + nickname);
 		int index=0;
 
 		Iterator<Player> myIter = players.iterator();
