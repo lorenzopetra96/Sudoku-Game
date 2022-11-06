@@ -40,7 +40,7 @@ Infine l'intero progetto è gestito tramite Maven e, tramite un dockerfile, è p
 ## Compilazione
 
 Tramite un Dockerfile è possibile costruire un container con le librerie necessarie al funzionamento dell'applicativo. Per creare
-tale container bisogna eseguire la seguente istruzione tramite terminale con Docker avviato nel path della cartella del progetto: 
+tale container bisogna eseguire la seguente istruzione tramite terminale nel path della cartella del progetto con Docker avviato : 
 
 ```docker build --no-cache -t sudoku-game  .```
 
@@ -55,6 +55,7 @@ l'ip della rete (127.0.0.1) e l'ID del Master-peer (0).
 
 
 Dopo il primo lancio, è possibile avviare il master peer con il seguente comando: 
+
 ```docker start -i MASTER-PEER```.
 
 Una volta avviato il Master-peer è possibile avviare gli altri peer. Ognuno di essi dovrà collegarsi alla rete

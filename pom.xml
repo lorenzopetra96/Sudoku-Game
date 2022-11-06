@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.example</groupId>
+	<groupId>com.github.lorenzopetra96.game</groupId>
 	<artifactId>sudoku-game</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
@@ -13,6 +13,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<repositories>
 		<repository>
@@ -28,14 +30,9 @@
 		<dependency>
 			<groupId>net.tomp2p</groupId>
 			<artifactId>tomp2p-all</artifactId>
-			<version>5.0-Beta8</version>
+			<version>5.0-Beta7</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.beryx</groupId>
-			<artifactId>text-io</artifactId>
-			<version>3.3.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -52,6 +49,11 @@
 			<groupId>org.beryx</groupId>
 			<artifactId>text-io</artifactId>
 			<version>3.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
 		</dependency>
 	</dependencies>
 	<build>
