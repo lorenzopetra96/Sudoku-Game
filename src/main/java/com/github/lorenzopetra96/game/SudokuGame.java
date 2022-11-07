@@ -71,14 +71,14 @@ public class SudokuGame {
 //				System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
 				peer.setChallenges((ArrayList<Challenge>) obj);
 				if(peer.getChallenge() == null) {
-					Robot robot = new Robot();
+//					Robot robot = new Robot();
 					terminal.resetLine();
 					terminal.getProperties().setPromptColor("yellow");
 					terminal.println("!!! Nuove partite create, clicca invio per aggiornare !!!");
 					terminal.getProperties().setPromptColor("white");
 					Thread.sleep(1000);
-					robot.keyPress(KeyEvent.VK_I);
-					robot.keyRelease(KeyEvent.VK_I);
+//					robot.keyPress(KeyEvent.VK_I);
+//					robot.keyRelease(KeyEvent.VK_I);
 				
 				}
 			}
@@ -86,15 +86,15 @@ public class SudokuGame {
 				
 				peer.setChallenge((Challenge) obj);
 				if(peer.getChallenge() != null) {
-					Robot robot = new Robot();
+//					Robot robot = new Robot();
 					terminal.resetLine();
 					peer.setChallenge( (Challenge) obj);
 					terminal.getProperties().setPromptColor("yellow");
 					terminal.println("!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
 					terminal.getProperties().setPromptColor("white");
 					Thread.sleep(1000);
-					robot.keyPress(KeyEvent.VK_I);
-					robot.keyRelease(KeyEvent.VK_I);
+//					robot.keyPress(KeyEvent.VK_I);
+//					robot.keyRelease(KeyEvent.VK_I);
 				}
 
 			}
