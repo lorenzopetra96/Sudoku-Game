@@ -68,6 +68,7 @@ public class SudokuGame {
 			System.out.println("OBJ: " + obj.getClass().toString() + " | CHA: " + peer.getChallenges().getClass().toString());
 
 			if(obj.getClass().equals(peer.getChallenges().getClass())) {
+				System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
 				peer.setChallenges((ArrayList<Challenge>) obj);
 				if(peer.getChallenge() == null) {
 					Robot robot = new Robot();
@@ -85,7 +86,7 @@ public class SudokuGame {
 				
 				peer.setChallenge((Challenge) obj);
 				if(peer.getChallenge() != null) {
-
+					System.out.println("Aggiornamento sfida. Listener challenge ha prelevato un messaggio");
 					peer.setChallenge( (Challenge) obj);
 					terminal.getProperties().setPromptColor("yellow");
 					terminal.println("Aggiornamento sudoku...");

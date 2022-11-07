@@ -95,9 +95,9 @@ public class ClientImpl implements Client{
 		peer.objectDataReply(new ObjectDataReply() {
 
 			public Object reply(PeerAddress sender, Object request) throws Exception {
-				Robot robot = new Robot();
-
-				robot.keyPress(KeyEvent.VK_ENTER);
+//				Robot robot = new Robot();
+				
+//				robot.keyPress(KeyEvent.VK_ENTER);
 				return _listener.parseMessage(request);
 			}
 		});
