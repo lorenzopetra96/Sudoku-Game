@@ -96,7 +96,7 @@ public class ClientImpl implements Client{
 
 			public Object reply(PeerAddress sender, Object request) throws Exception {
 //				Robot robot = new Robot();
-				
+				System.out.println("Sono in replay in ClientImpl: " + request.getClass());
 //				robot.keyPress(KeyEvent.VK_ENTER);
 				return _listener.parseMessage(request);
 			}
