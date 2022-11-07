@@ -499,6 +499,7 @@ public class ClientImpl implements Client{
 //				System.out.println(challenge.getPlayers_scores().toString());
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
 				updateChallengeList();
+				sendUpdatedChallenge();
 			}
 			return true;
 
