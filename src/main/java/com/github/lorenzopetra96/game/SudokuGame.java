@@ -54,8 +54,13 @@ public class SudokuGame {
 		CmdLineParser parser = new CmdLineParser(this); 
 		parser.parseArgument(args); 
 //		System.out.println("\nPeer: " + id + " on Master: " + master + "\n");
-		peer = new ClientImpl(master, id, new MessageListener());
-
+		try {
+			peer = new ClientImpl(master, id, new MessageListener());
+		}catch(Exception e) {
+			System.out.println("Master peer non trovato. ");
+			Thread.sleep(3000);
+			System.exit(1);
+		}
 
 	}
 
@@ -137,8 +142,8 @@ public class SudokuGame {
 			terminal.println(" ");
 			create_home_screen();
 
-			String nickname = textIO.newStringInputReader()
-					.read("   Inserisci un nickname: ");
+			String nickname = textIO.newStringInputReader().withDefaultValue(" ")
+					.read("   Inserisci un nickname");
 
 
 

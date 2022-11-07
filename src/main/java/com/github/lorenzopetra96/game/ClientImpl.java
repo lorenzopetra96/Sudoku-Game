@@ -86,10 +86,12 @@ public class ClientImpl implements Client{
 
 		FutureBootstrap fb = peer.bootstrap().inetAddress(InetAddress.getByName(_master_peer)).ports(DEFAULT_MASTER_PORT).start();
 		fb.awaitUninterruptibly();
+		
+		
 		if(fb.isSuccess()) {
 			peer.discover().peerAddress(fb.bootstrapTo().iterator().next()).start().awaitUninterruptibly();
 		}else {
-			throw new Exception("Error in master peer bootstrap.");
+			throw new Exception("Master peer non trovato");
 		}
 
 		peer.objectDataReply(new ObjectDataReply() {
@@ -467,7 +469,11 @@ public class ClientImpl implements Client{
 				return true;
 			}
 
-		}catch (Exception e) {
+		}
+		catch( IndexOutOfBoundsException e) {
+			System.out.println("Player non trovato nella lista dei partecipanti");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -489,7 +495,7 @@ public class ClientImpl implements Client{
 			if(futureGet.isSuccess()) {
 
 				if(futureGet.isEmpty()) {
-					challenge.setTerminated(true);
+					throw new ChallengeNotFoundException();
 				}
 
 				challenge = (Challenge) futureGet.dataMap().values().iterator().next().object();
@@ -500,7 +506,7 @@ public class ClientImpl implements Client{
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
 				updateChallengeList();
 				sendUpdatedChallenge();
-			}
+			} 
 			return true;
 
 		}catch(ChallengeNotFoundException e) {
