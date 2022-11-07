@@ -74,7 +74,7 @@ public class SudokuGame {
 //					Robot robot = new Robot();
 					terminal.resetLine();
 					terminal.getProperties().setPromptColor("yellow");
-					terminal.println("!!! Nuove partite create, clicca invio per aggiornare !!!");
+					terminal.println("\n\n!!! Nuove partite create, clicca invio per aggiornare !!!");
 					terminal.getProperties().setPromptColor("white");
 					Thread.sleep(1000);
 //					robot.keyPress(KeyEvent.VK_I);
@@ -90,7 +90,7 @@ public class SudokuGame {
 					terminal.resetLine();
 					peer.setChallenge( (Challenge) obj);
 					terminal.getProperties().setPromptColor("yellow");
-					terminal.println("!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
+					terminal.println("\n\n!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
 					terminal.getProperties().setPromptColor("white");
 					Thread.sleep(1000);
 //					robot.keyPress(KeyEvent.VK_I);
@@ -197,7 +197,7 @@ public class SudokuGame {
 				terminal.print("\n\n\t\t\tNon ci sono sfide attive...\n\n\n");
 			}
 
-			choice = textIO.newStringInputReader()
+			choice = textIO.newStringInputReader().withDefaultValue("refresh")
 					.read("\n\n\n   TABELLONE SFIDE\n\n  Digita '>' e un codice partita per partecipare ad una partita.\n"
 							+ "  Digita '@' e un nuovo codice partita per creare una nuova sfida.\n  Digita 'exit' per uscire dal gioco.\n\n"
 							+ "  >   ");
@@ -370,7 +370,7 @@ public class SudokuGame {
 			}else {
 				String choice = "   ";
 				
-				choice = textIO.newStringInputReader()
+				choice = textIO.newStringInputReader().withDefaultValue("refresh")
 							.read("\n   > ");
 				
 				
