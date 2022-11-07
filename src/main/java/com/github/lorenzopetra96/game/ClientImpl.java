@@ -421,7 +421,7 @@ public class ClientImpl implements Client{
 			
 			for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
 			{
-				if(entry.getKey().equals(player.getNickname())) continue;
+//				if(entry.getKey().equals(player.getNickname())) continue;
 				FutureDirect futureDirect = _dht.peer().sendDirect(players.get(findPlayer(entry.getKey())).getPeerAdd()).object(challenge).start();
 				futureDirect.awaitUninterruptibly();
 				
