@@ -96,7 +96,7 @@ public class ClientImpl implements Client{
 
 			public Object reply(PeerAddress sender, Object request) throws Exception {
 //				Robot robot = new Robot();
-				System.out.println("Sono in replay in ClientImpl: " + request.getClass());
+//				System.out.println("Sono in replay in ClientImpl: " + request.getClass());
 //				robot.keyPress(KeyEvent.VK_ENTER);
 				return _listener.parseMessage(request);
 			}
@@ -458,7 +458,7 @@ public class ClientImpl implements Client{
 				for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
 				{
 					if(entry.getKey().equals(player.getNickname())) continue;
-					System.out.println("Player: " + entry.getKey());
+//					System.out.println("Player: " + entry.getKey());
 					FutureDirect futureDirect = _dht.peer().sendDirect(players.get(findPlayer(entry.getKey())).getPeerAdd()).object(challenge).start();
 					futureDirect.awaitUninterruptibly();
 					
@@ -495,8 +495,8 @@ public class ClientImpl implements Client{
 				challenge = (Challenge) futureGet.dataMap().values().iterator().next().object();
 
 				challenge.getPlayers_scores().put(player.getNickname(), 0);
-				System.out.println("SIZE PLAYERS: " + challenge.getPlayers_scores().size());
-				System.out.println(challenge.getPlayers_scores().toString());
+//				System.out.println("SIZE PLAYERS: " + challenge.getPlayers_scores().size());
+//				System.out.println(challenge.getPlayers_scores().toString());
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
 				updateChallengeList();
 			}
@@ -535,7 +535,7 @@ public class ClientImpl implements Client{
 					else removeFromChallengeList();
 					for (Map.Entry<String, Integer> entry : challenge.getPlayers_scores().entrySet())
 					{
-						System.out.println("Player: " + entry.getKey());
+//						System.out.println("Player: " + entry.getKey());
 						FutureDirect futureDirect = _dht.peer().sendDirect(players.get(findPlayer(entry.getKey())).getPeerAdd()).object(challenge).start();
 						futureDirect.awaitUninterruptibly();
 						
@@ -603,7 +603,7 @@ public class ClientImpl implements Client{
 		Iterator<Pair<Player, Integer>> myIter;
 		int index=0;
 		Integer flag=0;
-		System.out.println("X: " + x + " - Y: " + y + " - N: " + value);
+//		System.out.println("X: " + x + " - Y: " + y + " - N: " + value);
 		try {
 
 			FutureGet futureGet = _dht.get(Number160.createHash(codice_partita)).start().awaitUninterruptibly();
@@ -655,7 +655,7 @@ public class ClientImpl implements Client{
 					challenge.setWinner(winner);
 					challenges.remove(findChallenge());
 					
-					challenge.getSudoku_board().printSudoku(challenge.getSudoku_board().getSudoku_sfida());
+//					challenge.getSudoku_board().printSudoku(challenge.getSudoku_board().getSudoku_sfida());
 					removeFromChallengeList();
 //					removeChallenge(codice_partita);
 				}

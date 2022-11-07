@@ -9,7 +9,7 @@ RUN mvn package
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
-ENV MASTERIP=127.0.0.1
+ENV MASTERIP=172.20.128.0
 ENV ID=0
 COPY --from=1 /app/target/sudoku-game-1.0-jar-with-dependencies.jar /app
 

@@ -53,7 +53,7 @@ public class SudokuGame {
 
 		CmdLineParser parser = new CmdLineParser(this); 
 		parser.parseArgument(args); 
-		System.out.println("\nPeer: " + id + " on Master: " + master + "\n");
+//		System.out.println("\nPeer: " + id + " on Master: " + master + "\n");
 		peer = new ClientImpl(master, id, new MessageListener());
 
 
@@ -65,16 +65,16 @@ public class SudokuGame {
 
 		public Object parseMessage(Object obj) throws Exception {
 
-			System.out.println("OBJ: " + obj.getClass().toString() + " | CHA: " + peer.getChallenges().getClass().toString());
+//			System.out.println("OBJ: " + obj.getClass().toString() + " | CHA: " + peer.getChallenges().getClass().toString());
 
 			if(obj.getClass().equals(peer.getChallenges().getClass())) {
-				System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
+//				System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
 				peer.setChallenges((ArrayList<Challenge>) obj);
 				if(peer.getChallenge() == null) {
 					Robot robot = new Robot();
 					terminal.resetLine();
 					terminal.getProperties().setPromptColor("yellow");
-					terminal.println("Aggiornamento lista partite...");
+					terminal.println("!!! Nuove partite create, clicca invio per aggiornare !!!");
 					terminal.getProperties().setPromptColor("white");
 					Thread.sleep(1000);
 					robot.keyPress(KeyEvent.VK_I);
@@ -86,11 +86,15 @@ public class SudokuGame {
 				
 				peer.setChallenge((Challenge) obj);
 				if(peer.getChallenge() != null) {
-					System.out.println("Aggiornamento sfida. Listener challenge ha prelevato un messaggio");
+					Robot robot = new Robot();
+					terminal.resetLine();
 					peer.setChallenge( (Challenge) obj);
 					terminal.getProperties().setPromptColor("yellow");
-					terminal.println("Aggiornamento sudoku...");
+					terminal.println("!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
 					terminal.getProperties().setPromptColor("white");
+					Thread.sleep(1000);
+					robot.keyPress(KeyEvent.VK_I);
+					robot.keyRelease(KeyEvent.VK_I);
 				}
 
 			}
@@ -121,7 +125,7 @@ public class SudokuGame {
 
 	public void home_screen() throws Exception{
 
-		System.out.println("Eccomi nella home!");
+//		System.out.println("Eccomi nella home!");
 
 
 		terminal.getProperties().setPromptColor("white");
@@ -317,7 +321,7 @@ public class SudokuGame {
 
 				terminal.getProperties().setPromptColor("white");
 				terminal.getProperties().setPromptItalic(false);
-//				continue;
+				continue;
 
 			}
 			else if(!peer.getChallenge().isStarted() && peer.getChallenge().getPlayers_scores().size()>1) {
