@@ -22,6 +22,15 @@ Un giocatore presente nel tabellone sfide può partecipare ad una delle partite 
 ">" insieme al codice partita. Una volta entrato a far parte di una partita non può partecipare ad altre sfide. Una volta abbandonata 
 la sfida, può accedere ad altre sfide o crearne nuove. 
 
+![partita](https://user-images.githubusercontent.com/74552824/200955798-c82af045-b204-4437-9915-dc4f0437ff43.png)
+
+![tabellone sfide](https://user-images.githubusercontent.com/74552824/200955800-a1aacab5-62c3-4926-8c73-aa0da7d7c2c3.png)
+
+![login](https://user-images.githubusercontent.com/74552824/200955802-e4e01708-be1b-40ec-bc1e-60eed6e99525.png)
+
+![Il mio video](https://user-images.githubusercontent.com/74552824/200956536-4d927784-49fd-4088-8bc0-5fcbf5c91e5c.gif)
+
+
 ## Architettura
 
 
