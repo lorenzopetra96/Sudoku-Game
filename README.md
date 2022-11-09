@@ -81,3 +81,5 @@ Dopo il primo lancio è possibile avviare il peer con la seguente istruzione:
 
 dove "X" rappresenta il valore dell'ID del peer.
 
+## Problemi noti
+
