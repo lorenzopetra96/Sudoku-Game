@@ -60,13 +60,9 @@ tale container bisogna eseguire la seguente istruzione tramite terminale nel pat
 
 ## Esecuzione
 
-Una volta fatto ciò, è possibile avviare il nodo master (MASTER-PEER) eseguendo la seguente istruzione:
+Una volta fatto ciò, prima di avviare il nodo master è possibile avviare il nodo master (MASTER-PEER) eseguendo la seguente istruzione:
 
-```docker run -i --name MASTER-PEER -m MASTERIP="127.0.0.1" -id 0 sudoku-game```
-
-L'istruzione non fa altro che eseguire il container partendo dall'immagine costruita precedentemente definendo il nome del container (MASTER-PEER), 
-l'ip della rete (127.0.0.1) e l'ID del Master-peer (0). 
-
+```docker network create --subnet=172.20.0.0/16 network && docker run -i --net network --ip 172.20.128.0 -e MASTERIP="172.20.128.0" -e ID=0 --name MASTER-PEER sudoku-game```
 
 Dopo il primo lancio, è possibile avviare il master peer con il seguente comando: 
 
@@ -75,7 +71,7 @@ Dopo il primo lancio, è possibile avviare il master peer con il seguente comand
 Una volta avviato il Master-peer è possibile avviare gli altri peer. Ognuno di essi dovrà collegarsi alla rete
 tramite l'indirizzo IP del container utilizzando un nome e un valore dell'ID univoci eseguendo la seguente istruzione:
 
-```docker run -i --name PEER-X -m MASTERIP="172.17.0.2" -id X sudoku-game```
+```docker run -i --net network -e MASTERIP="172.20.128.0" -e ID=X --name PEER-X sudoku-game```
 
 dove "X" rappresenta il valore dell'ID del peer. 
 
@@ -84,6 +80,4 @@ Dopo il primo lancio è possibile avviare il peer con la seguente istruzione:
 ```docker start -i PEER-X```
 
 dove "X" rappresenta il valore dell'ID del peer.
-
-## Demo
 
