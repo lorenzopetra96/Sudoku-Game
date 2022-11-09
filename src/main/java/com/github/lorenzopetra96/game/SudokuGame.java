@@ -16,7 +16,9 @@ import com.github.lorenzopetra96.beans.Challenge;
 import com.github.lorenzopetra96.beans.Pair;
 import com.github.lorenzopetra96.beans.Player;
 import com.github.lorenzopetra96.beans.Sudoku;
+import com.github.lorenzopetra96.exceptions.MasterPeerNotFoundException;
 import com.github.lorenzopetra96.interfaces.Client;
+import com.github.lorenzopetra96.interfaces.MessageListener;
 
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -38,7 +40,7 @@ public class SudokuGame {
 	private static Client peer;
 
 	private int row;
-	private static SudokuGame game;
+	
 
 	@Option(name="-m", aliases="--masterip", usage="the master peer ip address", required=true)
 	private static String master;
@@ -46,7 +48,7 @@ public class SudokuGame {
 	@Option(name="-id", aliases="--identifierpeer", usage="the unique identifier for this peer", required=true)
 	private static int id;
 
-	private SudokuGame(String[] args) throws Exception {
+	public SudokuGame(String[] args) throws Exception {
 
 		System.out.print("\033[H\033[2J");  
 		System.out.flush();
@@ -54,69 +56,79 @@ public class SudokuGame {
 		CmdLineParser parser = new CmdLineParser(this); 
 		parser.parseArgument(args); 
 //		System.out.println("\nPeer: " + id + " on Master: " + master + "\n");
-		try {
-			peer = new ClientImpl(master, id, new MessageListener());
-		}catch(Exception e) {
-			System.out.println("Master peer non trovato. ");
-			Thread.sleep(3000);
-			System.exit(1);
-		}
+		
 
 	}
-
-	class MessageListener{
-
-		public MessageListener(){}
-
-		public Object parseMessage(Object obj) throws Exception {
-
-//			System.out.println("OBJ: " + obj.getClass().toString() + " | CHA: " + peer.getChallenges().getClass().toString());
-
-			if(obj.getClass().equals(peer.getChallenges().getClass())) {
-//				System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
-				peer.setChallenges((ArrayList<Challenge>) obj);
-				if(peer.getChallenge() == null) {
-//					Robot robot = new Robot();
-					terminal.resetLine();
-					terminal.getProperties().setPromptColor("yellow");
-					terminal.println("\n\n!!! Nuove partite create, clicca invio per aggiornare !!!");
-					terminal.getProperties().setPromptColor("white");
-					Thread.sleep(1000);
-//					robot.keyPress(KeyEvent.VK_I);
-//					robot.keyRelease(KeyEvent.VK_I);
-				
-				}
-			}
-			else if(obj.getClass().equals(peer.getChallenge().getClass())) {
-				
-				peer.setChallenge((Challenge) obj);
-				if(peer.getChallenge() != null) {
-//					Robot robot = new Robot();
-					terminal.resetLine();
-					peer.setChallenge( (Challenge) obj);
-					terminal.getProperties().setPromptColor("yellow");
-					terminal.println("\n\n!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
-					terminal.getProperties().setPromptColor("white");
-					Thread.sleep(1000);
-//					robot.keyPress(KeyEvent.VK_I);
-//					robot.keyRelease(KeyEvent.VK_I);
-				}
-
-			}
-			return "success";
-		}
+	
 
 
-	}
+
+	
 
 	public static void main(String[] args) throws Exception {
 
-		game = new SudokuGame(args);
+		SudokuGame game = new SudokuGame(args);
+		
+		class MessageListenerImpl implements MessageListener{
+
+			public MessageListenerImpl(){}
+
+			public Object parseMessage(Object obj) throws Exception {
+
+//				System.out.println("OBJ: " + obj.getClass().toString() + " | CHA: " + peer.getChallenges().getClass().toString());
+
+				if(obj.getClass().equals(peer.getChallenges().getClass())) {
+//					System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
+					peer.setChallenges((ArrayList<Challenge>) obj);
+					if(peer.getChallenge() == null) {
+//						Robot robot = new Robot();
+						terminal.resetLine();
+						terminal.getProperties().setPromptColor("yellow");
+						terminal.println("\n\n!!! Nuove partite create, clicca invio per aggiornare !!!");
+						terminal.getProperties().setPromptColor("white");
+						Thread.sleep(1000);
+//						robot.keyPress(KeyEvent.VK_I);
+//						robot.keyRelease(KeyEvent.VK_I);
+					
+					}
+				}
+				else if(obj.getClass().equals(peer.getChallenge().getClass())) {
+					
+					peer.setChallenge((Challenge) obj);
+					if(peer.getChallenge() != null) {
+//						Robot robot = new Robot();
+						terminal.resetLine();
+//						peer.setChallenge( (Challenge) obj);
+						terminal.getProperties().setPromptColor("yellow");
+						terminal.println("\n\n!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
+						terminal.getProperties().setPromptColor("white");
+						Thread.sleep(1000);
+//						robot.keyPress(KeyEvent.VK_I);
+//						robot.keyRelease(KeyEvent.VK_I);
+					}
+
+				}
+				return "success";
+			}
+
+
+		}
+		
+		try {
+			peer = new ClientImpl(master, id, new MessageListenerImpl());
+		}catch(MasterPeerNotFoundException e) {
+			System.out.println("Master peer non trovato. ");
+			Thread.sleep(3000);
+			System.exit(1);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		try {
 
 
 			game.home_screen();
-			game.choices_screen();
+			game.choices_screen(game);
 
 
 
@@ -170,7 +182,7 @@ public class SudokuGame {
 
 
 
-	public void choices_screen() throws Exception{
+	public void choices_screen(SudokuGame game) throws Exception{
 
 		System.out.print("\033[H\033[2J");  
 		System.out.flush();

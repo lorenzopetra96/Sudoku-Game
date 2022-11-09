@@ -20,7 +20,7 @@ import com.github.lorenzopetra96.interfaces.Client;
 
 
 import com.github.lorenzopetra96.exceptions.*;
-import com.github.lorenzopetra96.game.SudokuGame.MessageListener;
+import com.github.lorenzopetra96.interfaces.*;
 
 import net.tomp2p.dht.FutureGet;
 import net.tomp2p.dht.FutureRemove;
@@ -91,7 +91,7 @@ public class ClientImpl implements Client{
 		if(fb.isSuccess()) {
 			peer.discover().peerAddress(fb.bootstrapTo().iterator().next()).start().awaitUninterruptibly();
 		}else {
-			throw new Exception("Master peer non trovato");
+			throw new MasterPeerNotFoundException();
 		}
 
 		peer.objectDataReply(new ObjectDataReply() {
@@ -556,38 +556,6 @@ public class ClientImpl implements Client{
 					
 				}
 				
-				
-				
-//				if(challenge.getPlayers_scores().size()==1) {
-//					challenge.getPlayers_scores().clear();
-//
-//
-//					removeFromChallengeList();
-//				}
-//				else {
-//					challenge.getPlayers_scores().remove(player.getNickname());
-//
-//					
-//					updateChallengeList();
-//				}
-//
-//				
-//				
-//				if(challenge.getPlayers_scores().size()==1 || challenge.isTerminated()) {
-//					removeFromChallengeList();
-//				}
-//
-//
-//				if(!(challenge.getPlayers_scores().isEmpty())) {
-//
-//
-//					_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
-//					sendUpdatedChallenge();
-//				}
-//				else removeChallenge(codice_partita); 
-
-
-
 
 			}
 			return true;
@@ -622,8 +590,7 @@ public class ClientImpl implements Client{
 				}
 
 				challenge = (Challenge) futureGet.dataMap().values().iterator().next().object();
-
-
+				
 				if(challenge.getSudoku_board().getSudoku_risolto()[x][y]!=value) {			//Se il value inserito è errato, lo score del giocatore perde un punto
 
 					challenge.getPlayers_scores().put(player.getNickname(), challenge.getPlayers_scores().get(player.getNickname()) - 1);
@@ -662,10 +629,11 @@ public class ClientImpl implements Client{
 					challenge.setWinner(winner);
 					challenges.remove(findChallenge());
 					
-//					challenge.getSudoku_board().printSudoku(challenge.getSudoku_board().getSudoku_sfida());
+					challenge.getSudoku_board().printSudoku(challenge.getSudoku_board().getSudoku_sfida());
 					removeFromChallengeList();
 //					removeChallenge(codice_partita);
 				}
+				
 				
 				_dht.put(Number160.createHash(codice_partita)).data(new Data(challenge)).start().awaitUninterruptibly();
 				sendUpdatedChallenge();
