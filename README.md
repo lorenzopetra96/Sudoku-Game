@@ -33,7 +33,8 @@ la sfida, può accedere ad altre sfide o crearne nuove.
 
 
 ### Termine sfida
-![Il mio video](https://user-images.githubusercontent.com/74552824/200958024-48dc58fc-41bc-4917-8a10-71388ed5be91.gif)
+![termine partita](https://user-images.githubusercontent.com/74552824/201118214-ca8fe4b3-3a88-4bc0-bf65-6ffa5a615665.png)
+
 
 
 ## Architettura
