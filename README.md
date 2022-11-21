@@ -40,6 +40,13 @@ la sfida, può accedere ad altre sfide o crearne nuove.
 ## Architettura
 
 
+Il gioco si basa sulla connettività peer-to-peer e in particolare memorizza i suoi dati in una tabella hash distribuita. Il sistema è progettato per mantenere l'elenco dei giocatori connessi in una posizione corrispondente all'hash di una stringa. Lo stesso vale per la lista delle sfide e le singole sfide. 
+
+All'aggiornamento di una delle sfide disponibili presenti nella lista di sfide, un messaggio verrà inviato in maniera diretta a tutti i giocatori connessi in modo tale da poter aggiornare la lista all'ultima versione e vedere, quindi, le nuove sfide, il numero di giocatori aggiornati o se una sfida è terminata. 
+
+Una volta effettuato l'accesso ad una sfida, qualsiasi operazione, per cui c'è bisogno di un aggiornamento a tutti gli altri partecipanti, sarà seguita da due fasi: una prima fase in cui si aggiorna la singola sfida aggiornando la risorsa nella DHT all'ultima versione (recupera l'ultima versione della sfida, esegue l'operazione richiesta e aggiorna la sfida nel DHT); una seconda fase in cui viene mandata la sfida aggiornata a tutti i partecipanti della stessa con un messaggio diretto. Il motivo per cui è stata scelta questa strategia è dato dal fatto che potrebbe capitare che al termine di un'operazione di inserimento valore all'interno della sudoku board oppure abbandono partita da parte di un sfidante, un altro giocatore partecipi alla sfida. In questo modo, il giocatore vedrà l'ultima versione della partita con punteggi e board aggiornati. Lo stesso concetto viene utilizzato anche per l'aggiornamento della lista delle sfide disponibili. 
+
+
 
 ## Strumenti utilizzati
 
@@ -84,3 +91,5 @@ dove "X" rappresenta il valore dell'ID del peer.
 
 ## Problemi noti
 
+- L'esecuzione del programma in un qualsiasi altro terminale che non sia implementato su Swing, presenterà un testo senza colori.
+- Il refresh della sudoku board e del tabellone sfide sarà automatico se l'esecuzione del programma avviene in locale, altrimenti bisognerà seguire le indicazioni riportate a terminale per aggiornare (cliccare Enter).
