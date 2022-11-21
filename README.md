@@ -92,4 +92,4 @@ dove "X" rappresenta il valore dell'ID del peer.
 ## Problemi noti
 
 - L'esecuzione del programma in un qualsiasi altro terminale che non sia implementato su Swing, presenterà un testo senza colori.
-- Il refresh della sudoku board e del tabellone sfide sarà automatico se l'esecuzione del programma avviene in locale, altrimenti bisognerà seguire le indicazioni riportate a terminale per aggiornare (cliccare Enter).
+- Il refresh della sudoku board e del tabellone sfide sarà automatico se l'esecuzione del programma avviene in locale, altrimenti bisognerà seguire le indicazioni riportate a terminale nel messaggio di avviso di aggiornamento partita/e (cliccare Enter).
