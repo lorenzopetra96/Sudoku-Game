@@ -24,14 +24,6 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 
 
-/**
- * docker build --no-cache -t test  .
- * docker run -i -e MASTERIP="127.0.0.1" -e ID=0 test
- * use -i for interactive mode
- * use -e to set the environment variables
- * @author carminespagnuolo
- *
- */
 public class SudokuGame {
 
 
@@ -55,7 +47,6 @@ public class SudokuGame {
 
 		CmdLineParser parser = new CmdLineParser(this); 
 		parser.parseArgument(args); 
-//		System.out.println("\nPeer: " + id + " on Master: " + master + "\n");
 		
 
 	}
@@ -75,20 +66,15 @@ public class SudokuGame {
 
 			public Object parseMessage(Object obj) throws Exception {
 
-//				System.out.println("OBJ: " + obj.getClass().toString() + " | CHA: " + peer.getChallenges().getClass().toString());
 
 				if(obj.getClass().equals(peer.getChallenges().getClass())) {
-//					System.out.println("Aggiornamento lista partite disponibili. Listener lista ha prelevato un messaggio");
 					peer.setChallenges((ArrayList<Challenge>) obj);
 					if(peer.getChallenge() == null) {
-//						Robot robot = new Robot();
 						terminal.resetLine();
 						terminal.getProperties().setPromptColor("yellow");
 						terminal.println("\n\n!!! Nuove partite create, clicca invio per aggiornare !!!");
 						terminal.getProperties().setPromptColor("white");
 						Thread.sleep(1000);
-//						robot.keyPress(KeyEvent.VK_I);
-//						robot.keyRelease(KeyEvent.VK_I);
 					
 					}
 				}
@@ -96,15 +82,11 @@ public class SudokuGame {
 					
 					peer.setChallenge((Challenge) obj);
 					if(peer.getChallenge() != null) {
-//						Robot robot = new Robot();
 						terminal.resetLine();
-//						peer.setChallenge( (Challenge) obj);
 						terminal.getProperties().setPromptColor("yellow");
 						terminal.println("\n\n!!! Aggiornamento sfida, clicca invio per aggiornare !!!");
 						terminal.getProperties().setPromptColor("white");
 						Thread.sleep(1000);
-//						robot.keyPress(KeyEvent.VK_I);
-//						robot.keyRelease(KeyEvent.VK_I);
 					}
 
 				}
@@ -347,7 +329,6 @@ public class SudokuGame {
 			else if(peer.getChallenge().isStarted() && peer.getChallenge().getPlayers_scores().size()==1 && !peer.getChallenge().isTerminated()){
 				terminal.resetToBookmark("BOOKMARK");
 				peer.getChallenge().setTerminated(true);
-//				peer.removeFromChallengeList();
 				continue;
 
 			}
@@ -360,12 +341,6 @@ public class SudokuGame {
 				terminal.getProperties().setPromptBold(true);
 				terminal.println(" La partita è terminata. ");
 				
-//				if(peer.getChallenge() != null && !peer.getChallenge().isFull() && peer.getChallenge().getWinner()!=null && peer.getChallenge().getWinner().isEmpty()) {
-//
-//					peer.getChallenge().setWinner(new Pair<String,Integer>(peer.getPlayer().getNickname(), peer.getChallenge().getPlayers_scores().get(peer.getPlayer().getNickname())) );
-//					terminal.println(peer.getChallenge().getWinner().element0() + " vince con punti pari a " + peer.getChallenge().getWinner().element1() );
-//
-//				}
 				
 				if(peer.getChallenge().isFull()) terminal.println("  \n" + peer.getChallenge().getWinner().element0() + " vince con punti pari a " + peer.getChallenge().getWinner().element1() );
 				
